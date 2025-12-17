@@ -1,18 +1,10 @@
-# Node
 node_modules
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# Lokalny build (niepotrzebny, bo build robimy w Dockerze)
 dist
 build
 .out
 .next
 coverage
 
-# VCS / IDE
 .git
 .vscode
 .idea
