@@ -3,31 +3,28 @@ FROM node:20-alpine AS build
 
 WORKDIR /app
 
-# Najpierw zależności (lepsze cache)
+# Zależności (cache-friendly)
 COPY package*.json ./
-# Jeśli masz lock inny niż package-lock.json (np. pnpm-lock.yaml / yarn.lock),
-# to dopasuj komendy poniżej.
 RUN npm ci
 
-# Kod aplikacji
+# Źródła aplikacji
 COPY . .
 
-# Build (powinien wygenerować /app/dist)
+# Budowa frontu -> powinno wygenerować /app/dist
 RUN npm run build
 
 
 # ========= RUNTIME STAGE (NGINX) =========
 FROM nginx:alpine
 
-# Usuń domyślną konfigurację
+# Usuń domyślną konfigurację NGINX
 RUN rm -f /etc/nginx/conf.d/default.conf
 
-# Twoja konfiguracja nginx
+# Skopiuj Twoją konfigurację
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Skopiuj zbudowane pliki statyczne
+# Skopiuj build (dist) do katalogu serwowanego przez NGINX
 COPY --from=build /app/dist /usr/share/nginx/html
 
 EXPOSE 80
-
 CMD ["nginx", "-g", "daemon off;"]
