@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  infopoint-kiosk:
+    build:
+      context: .
+    container_name: infopoint_kiosk
+    restart: always
+    ports:
+      - "8081:80"
+    environment:
+      # Przekazanie zmiennej do kontenera. 
+      # W Portainerze ustaw wartość dla API_KEY w zakładce Environment.
+      - API_KEY=${API_KEY}
+    networks:
+      - kiosk-network
+
+networks:
+  kiosk-network:
+    driver: bridge
