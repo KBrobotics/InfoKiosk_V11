@@ -1,18 +1,33 @@
-# Prosty obraz NGINX do serwowania plików statycznych (kiosk / SPA)
+# ========= BUILD STAGE =========
+FROM node:20-alpine AS build
+
+WORKDIR /app
+
+# Najpierw zależności (lepsze cache)
+COPY package*.json ./
+# Jeśli masz lock inny niż package-lock.json (np. pnpm-lock.yaml / yarn.lock),
+# to dopasuj komendy poniżej.
+RUN npm ci
+
+# Kod aplikacji
+COPY . .
+
+# Build (powinien wygenerować /app/dist)
+RUN npm run build
+
+
+# ========= RUNTIME STAGE (NGINX) =========
 FROM nginx:alpine
 
-# Usuwamy domyślną konfigurację NGINX
+# Usuń domyślną konfigurację
 RUN rm -f /etc/nginx/conf.d/default.conf
 
-# Kopiujemy własną konfigurację
+# Twoja konfiguracja nginx
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Kopiujemy pliki aplikacji do katalogu serwowanego przez NGINX
-# Załóżmy, że gotowy build frontendu jest w ./dist (często: dist albo build)
-# Jeśli u Ciebie katalog nazywa się inaczej (np. build/), zmień ścieżkę poniżej.
-COPY ./dist /usr/share/nginx/html
+# Skopiuj zbudowane pliki statyczne
+COPY --from=build /app/dist /usr/share/nginx/html
 
 EXPOSE 80
 
-# Start NGINX
 CMD ["nginx", "-g", "daemon off;"]
