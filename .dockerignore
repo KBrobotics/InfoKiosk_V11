@@ -1,11 +1,11 @@
-# Node / frontend
+# Node
 node_modules
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Build output lokalny (niepotrzebny, bo budujemy w Dockerze)
+# Lokalny build (niepotrzebny, bo build robimy w Dockerze)
 dist
 build
 .out
@@ -14,14 +14,7 @@ coverage
 
 # VCS / IDE
 .git
-.gitignore
 .vscode
 .idea
-
-# OS
 .DS_Store
 Thumbs.db
-
-# Docker artefakty
-Dockerfile.*
-docker-compose*.yml
